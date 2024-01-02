@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	log "logprinter"
+	log "github.com/dredfort42/tools/logprinter"
 )
 
 // ConfigMap is a map containing configuration properties.
