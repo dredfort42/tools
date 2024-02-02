@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/dredfort42/tools/logprinter"
+	loger "github.com/dredfort42/tools/logprinter"
 )
 
 // ConfigMap is a map containing configuration properties.
@@ -17,7 +17,7 @@ func ReadConfig(path string, config *ConfigMap) error {
 	file, err := os.Open(path)
 
 	if err != nil {
-		logprinter.PrintWarning("Failed to open file", err)
+		loger.PrintWarning("Failed to open file", path)
 		return err
 	}
 	defer file.Close()
@@ -40,7 +40,7 @@ func ReadConfig(path string, config *ConfigMap) error {
 		return err
 	}
 
-	logprinter.PrintSuccess("Successfully read configuration from file", path)
+	loger.PrintSuccess("Successfully read configuration from file", path)
 
 	return nil
 }
@@ -51,28 +51,32 @@ func GetConfig() (ConfigMap, error) {
 	config := make(ConfigMap)
 
 	// Read global config file
-	if err := ReadConfig("./global.cfg", &config); err == nil {
+	if err := ReadConfig("/app/global.cfg", &config); err == nil {
+		success = true
+	} else if err := ReadConfig("./global.cfg", &config); err == nil {
 		success = true
 	}
 
 	// Read local config file
-	if err := ReadConfig("./local.cfg", &config); err == nil {
+	if err := ReadConfig("/app/local.cfg", &config); err == nil {
+		success = true
+	} else if err := ReadConfig("./local.cfg", &config); err == nil {
 		success = true
 	}
 
 	if !success {
-		logprinter.PrintError("Failed to read configuration", nil)
+		loger.PrintError("Failed to read configuration", nil)
 		return nil, fmt.Errorf("Failed to read configuration")
 	} else {
-		logprinter.PrintSuccess("Successfully read configuration", "")
+		loger.PrintSuccess("Successfully read configuration", "")
 		return config, nil
 	}
 }
 
 // PrintConfig prints a ConfigMap to stdout.
 func PrintConfig(config ConfigMap) {
-	logprinter.PrintInfo("Configuration", "")
+	loger.PrintInfo("Configuration", "")
 	for key, value := range config {
-		logprinter.PrintInfo(key, value)
+		loger.PrintInfo(key, value)
 	}
 }
