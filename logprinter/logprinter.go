@@ -2,6 +2,7 @@ package logprinter
 
 import (
 	"fmt"
+	"time"
 )
 
 // Color definitions
@@ -12,29 +13,43 @@ const (
 	RESET  = "\033[0m"
 )
 
+// Get the current time in the "2024-02-01 11:01:10" format
+func getCurrentTime() string {
+	return time.Now().Format("2024-02-01 11:01:10")
+}
+
 // PrintSuccess prints a success message
 func PrintSuccess(msg string, info string) {
 	if info == "" {
-		fmt.Printf("%s[I] %s%s\n", GREEN, msg, RESET)
+		fmt.Printf("%s %s[S] %s%s\n", getCurrentTime(), GREEN, msg, RESET)
 	} else {
-		fmt.Printf("%s[I] %s: %s%s\n", GREEN, msg, info, RESET)
+		fmt.Printf("%s %s[S] %s: %s%s\n", getCurrentTime(), GREEN, msg, info, RESET)
 	}
 }
 
 // PrintWarning prints a warning message
 func PrintWarning(msg string, info string) {
 	if info == "" {
-		fmt.Printf("%s[W] %s%s\n", YELLOW, msg, RESET)
+		fmt.Printf("%s %s[W] %s%s\n", getCurrentTime(), YELLOW, msg, RESET)
 	} else {
-		fmt.Printf("%s[W] %s: %s%s\n", YELLOW, msg, info, RESET)
+		fmt.Printf("%s %s[W] %s: %s%s\n", getCurrentTime(), YELLOW, msg, info, RESET)
 	}
 }
 
 // PrintError prints an error message
 func PrintError(msg string, err error) {
 	if err == nil {
-		fmt.Printf("%s[E] %s%s\n", RED, msg, RESET)
+		fmt.Printf("%s %s[E] %s%s\n", getCurrentTime(), RED, msg, RESET)
 	} else {
-		fmt.Printf("%s[E] %s: %s%s\n", RED, msg, err.Error(), RESET)
+		fmt.Printf("%s %s[E] %s: %s%s\n", getCurrentTime(), RED, msg, err.Error(), RESET)
+	}
+}
+
+// PrintInfo prints an info message
+func PrintInfo(msg string, info string) {
+	if info == "" {
+		fmt.Printf("%s [I] %s\n", getCurrentTime(), msg)
+	} else {
+		fmt.Printf("%s [I] %s: %s\n", getCurrentTime(), msg, info)
 	}
 }
