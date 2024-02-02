@@ -13,9 +13,9 @@ const (
 	RESET  = "\033[0m"
 )
 
-// Get the current time in the "2024-02-01 11:01:10" format
+// Get the current time in the "2006-01-02 15:04:05" format
 func getCurrentTime() string {
-	return time.Now().Format("2024-02-01 11:01:10")
+	return time.Now().UTC().Format("2006-01-02 15:04:05")
 }
 
 // PrintSuccess prints a success message

@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	log "github.com/dredfort42/tools/logprinter"
+	"github.com/dredfort42/tools/logprinter"
 )
 
 // ConfigMap is a map containing configuration properties.
@@ -17,7 +17,7 @@ func ReadConfig(path string, config *ConfigMap) error {
 	file, err := os.Open(path)
 
 	if err != nil {
-		log.PrintError("Failed to open file", err)
+		logprinter.PrintWarning("Failed to open file", err)
 		return err
 	}
 	defer file.Close()
@@ -40,7 +40,7 @@ func ReadConfig(path string, config *ConfigMap) error {
 		return err
 	}
 
-	log.PrintSuccess("Successfully read configuration from file", path)
+	logprinter.PrintSuccess("Successfully read configuration from file", path)
 
 	return nil
 }
@@ -61,18 +61,18 @@ func GetConfig() (ConfigMap, error) {
 	}
 
 	if !success {
-		log.PrintError("Failed to read configuration", nil)
+		logprinter.PrintError("Failed to read configuration", nil)
 		return nil, fmt.Errorf("Failed to read configuration")
 	} else {
-		log.PrintSuccess("Successfully read configuration", "")
+		logprinter.PrintSuccess("Successfully read configuration", "")
 		return config, nil
 	}
 }
 
 // PrintConfig prints a ConfigMap to stdout.
 func PrintConfig(config ConfigMap) {
-	log.PrintSuccess("Configuration", "")
+	logprinter.PrintInfo("Configuration", "")
 	for key, value := range config {
-		log.PrintSuccess(key, value)
+		logprinter.PrintInfo(key, value)
 	}
 }
