@@ -27,6 +27,8 @@ func Success(msg string, info ...string) {
 	for i := 0; i < len(info); i++ {
 		fmt.Printf(" | %s", info[i])
 	}
+
+	fmt.Printf("%s\n", RESET)
 }
 
 // Warning prints a warning message

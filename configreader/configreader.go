@@ -20,7 +20,7 @@ func ReadConfig(path string) error {
 	file, err := os.Open(path)
 
 	if err != nil {
-		loger.Warning("Failed to open file", path)
+		loger.Debug("Failed to open file", path)
 		return err
 	}
 	defer file.Close()
@@ -68,7 +68,7 @@ func GetConfig() error {
 
 	if !success {
 		loger.Error("Failed to read configuration", nil)
-		return fmt.Errorf("Failed to read configuration")
+		return fmt.Errorf("failed to read configuration")
 	} else {
 		loger.Success("Successfully read configuration")
 		return nil
