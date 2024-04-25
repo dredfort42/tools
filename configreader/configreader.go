@@ -12,8 +12,11 @@ import (
 // ConfigMap is a map containing configuration properties.
 type ConfigMap map[string]string
 
+// Global variable to store configuration
+var config ConfigMap = make(ConfigMap)
+
 // ReadConfig reads a configuration file to a ConfigMap and returns an error if it fails.
-func ReadConfig(path string, config *ConfigMap) error {
+func ReadConfig(path string) error {
 	file, err := os.Open(path)
 
 	if err != nil {
@@ -31,7 +34,7 @@ func ReadConfig(path string, config *ConfigMap) error {
 			if found {
 				parameter := strings.TrimSpace(before)
 				value := strings.TrimSpace(after)
-				(*config)[parameter] = value
+				config[parameter] = value
 			}
 		}
 	}
@@ -40,7 +43,7 @@ func ReadConfig(path string, config *ConfigMap) error {
 		return err
 	}
 
-	loger.PrintSuccess("Successfully read configuration from file", path)
+	loger.Success("Successfully read configuration from file", path)
 
 	return nil
 }
@@ -48,35 +51,34 @@ func ReadConfig(path string, config *ConfigMap) error {
 // Get configuration from global and local .cfg files and returns a ConfigMap and an error if it fails.
 func GetConfig() (ConfigMap, error) {
 	success := false
-	config := make(ConfigMap)
 
 	// Read global config file
-	if err := ReadConfig("/app/global.cfg", &config); err == nil {
+	if err := ReadConfig("/app/global.cfg"); err == nil {
 		success = true
-	} else if err := ReadConfig("./global.cfg", &config); err == nil {
+	} else if err := ReadConfig("./global.cfg"); err == nil {
 		success = true
 	}
 
 	// Read local config file
-	if err := ReadConfig("/app/local.cfg", &config); err == nil {
+	if err := ReadConfig("/app/local.cfg"); err == nil {
 		success = true
-	} else if err := ReadConfig("./local.cfg", &config); err == nil {
+	} else if err := ReadConfig("./local.cfg"); err == nil {
 		success = true
 	}
 
 	if !success {
-		loger.PrintError("Failed to read configuration", nil)
+		loger.Error("Failed to read configuration", nil)
 		return nil, fmt.Errorf("Failed to read configuration")
 	} else {
-		loger.PrintSuccess("Successfully read configuration", "")
+		loger.Success("Successfully read configuration")
 		return config, nil
 	}
 }
 
 // PrintConfig prints a ConfigMap to stdout.
 func PrintConfig(config ConfigMap) {
-	loger.PrintInfo("Configuration", "")
+	loger.Info("Configuration")
 	for key, value := range config {
-		loger.PrintInfo(key, value)
+		loger.Info(key, value)
 	}
 }
