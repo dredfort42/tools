@@ -20,7 +20,7 @@ func ReadConfig(path string) error {
 	file, err := os.Open(path)
 
 	if err != nil {
-		loger.PrintWarning("Failed to open file", path)
+		loger.Warning("Failed to open file", path)
 		return err
 	}
 	defer file.Close()
