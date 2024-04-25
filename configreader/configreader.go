@@ -13,7 +13,7 @@ import (
 type ConfigMap map[string]string
 
 // Global variable to store configuration
-var config ConfigMap = make(ConfigMap)
+var Config ConfigMap = make(ConfigMap)
 
 // ReadConfig reads a configuration file to a ConfigMap and returns an error if it fails.
 func ReadConfig(path string) error {
@@ -34,7 +34,7 @@ func ReadConfig(path string) error {
 			if found {
 				parameter := strings.TrimSpace(before)
 				value := strings.TrimSpace(after)
-				config[parameter] = value
+				Config[parameter] = value
 			}
 		}
 	}
@@ -49,7 +49,7 @@ func ReadConfig(path string) error {
 }
 
 // Get configuration from global and local .cfg files and returns a ConfigMap and an error if it fails.
-func GetConfig() (ConfigMap, error) {
+func GetConfig() error {
 	success := false
 
 	// Read global config file
@@ -68,10 +68,10 @@ func GetConfig() (ConfigMap, error) {
 
 	if !success {
 		loger.Error("Failed to read configuration", nil)
-		return nil, fmt.Errorf("Failed to read configuration")
+		return fmt.Errorf("Failed to read configuration")
 	} else {
 		loger.Success("Successfully read configuration")
-		return config, nil
+		return nil
 	}
 }
 
