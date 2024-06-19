@@ -2,9 +2,9 @@ package configreader
 
 import (
 	"bufio"
-	"fmt"
 	"os"
 	"strings"
+	"unicode"
 
 	loger "github.com/dredfort42/tools/logprinter"
 )
@@ -15,13 +15,22 @@ type ConfigMap map[string]string
 // Global variable to store configuration
 var Config ConfigMap = make(ConfigMap)
 
-// ReadConfig reads a configuration file to a ConfigMap and returns an error if it fails.
-func ReadConfig(path string) error {
-	file, err := os.Open(path)
+// Get the configuration from the /app/config.ini file if path parameter is nil or the .ini file located along the path
+func GetConfig(path *string) (err error) {
+	var configPath string
+
+	if path == nil {
+		configPath = "/app/config.ini"
+	} else {
+		configPath = *path
+	}
+
+	var file *os.File
+	file, err = os.Open(configPath)
 
 	if err != nil {
-		loger.Debug("Failed to open file", path)
-		return err
+		loger.Error("Failed to open config file", err)
+		return
 	}
 	defer file.Close()
 
@@ -29,50 +38,33 @@ func ReadConfig(path string) error {
 
 	for scanner.Scan() {
 		line := strings.TrimSpace(scanner.Text())
-		if !strings.HasPrefix(line, "#") && len(line) != 0 {
-			before, after, found := strings.Cut(line, "=")
-			if found {
-				parameter := strings.TrimSpace(before)
-				value := strings.TrimSpace(after)
-				Config[parameter] = value
-			}
+
+		if len(line) == 0 || !unicode.IsLetter(rune(line[0])) {
+			continue
+		}
+
+		parameter, _, found := strings.Cut(line, "#")
+		if found {
+			line = parameter
+		}
+
+		before, after, found := strings.Cut(line, "=")
+		if found {
+			parameter := strings.TrimSpace(before)
+			value := strings.TrimSpace(after)
+			Config[parameter] = value
 		}
 	}
 
-	if err := scanner.Err(); err != nil {
-		return err
+	err = scanner.Err()
+	if err != nil {
+		loger.Error("Failed to read configuration from file", err)
+		return
 	}
 
-	loger.Success("Successfully read configuration from file", path)
+	loger.Success("Successfully read configuration from file", configPath)
 
-	return nil
-}
-
-// Get configuration from global and local .cfg files and returns a ConfigMap and an error if it fails.
-func GetConfig() error {
-	success := false
-
-	// Read global config file
-	if err := ReadConfig("/app/global.cfg"); err == nil {
-		success = true
-	} else if err := ReadConfig("./global.cfg"); err == nil {
-		success = true
-	}
-
-	// Read local config file
-	if err := ReadConfig("/app/local.cfg"); err == nil {
-		success = true
-	} else if err := ReadConfig("./local.cfg"); err == nil {
-		success = true
-	}
-
-	if !success {
-		loger.Error("Failed to read configuration", nil)
-		return fmt.Errorf("failed to read configuration")
-	} else {
-		loger.Success("Successfully read configuration")
-		return nil
-	}
+	return
 }
 
 // PrintConfig prints a ConfigMap to stdout.

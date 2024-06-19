@@ -11,4 +11,4 @@ It is used to print messages in a more readable way.
 ## configreader
 
 configreader is a package for reading configuration files.
-It contains a ConfigMap type, global variable config, ReadConfig function for get configuration file on path, GetConfig function for get configuration from global and local .cfg files, and PrintConfig function.
+It contains a ConfigMap type, global variable config, GetConfig function for get the configuration from the /app/config.ini file or the .ini file located along the path.
