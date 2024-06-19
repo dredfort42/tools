@@ -2,11 +2,11 @@ package configreader
 
 import (
 	"bufio"
+	"errors"
+	"flag"
 	"os"
 	"strings"
 	"unicode"
-
-	loger "github.com/dredfort42/tools/logprinter"
 )
 
 // ConfigMap is a map containing configuration properties.
@@ -16,21 +16,16 @@ type ConfigMap map[string]string
 var Config ConfigMap = make(ConfigMap)
 
 // Get the configuration from the /app/config.ini file if path parameter is nil or the .ini file located along the path
-func GetConfig(path *string) (err error) {
-	var configPath string
+func GetConfig() (err error) {
+	var path *string = flag.String("config", "/app/config.ini", "Path to the configuration file")
 
-	if path == nil {
-		configPath = "/app/config.ini"
-	} else {
-		configPath = *path
-	}
+	flag.Parse()
 
 	var file *os.File
-	file, err = os.Open(configPath)
+	file, err = os.Open(*path)
 
 	if err != nil {
-		loger.Error("Failed to open config file", err)
-		return
+		return errors.New("use the --config flag to specify the path to the .ini configuration file")
 	}
 	defer file.Close()
 
@@ -43,10 +38,8 @@ func GetConfig(path *string) (err error) {
 			continue
 		}
 
-		parameter, _, found := strings.Cut(line, "#")
-		if found {
-			line = parameter
-		}
+		line = strings.Split(line, "#")[0]
+		line = strings.Split(line, ";")[0]
 
 		before, after, found := strings.Cut(line, "=")
 		if found {
@@ -58,19 +51,8 @@ func GetConfig(path *string) (err error) {
 
 	err = scanner.Err()
 	if err != nil {
-		loger.Error("Failed to read configuration from file", err)
-		return
+		return errors.New("failed to read configuration from .ini file")
 	}
-
-	loger.Success("Successfully read configuration from file", configPath)
 
 	return
-}
-
-// PrintConfig prints a ConfigMap to stdout.
-func PrintConfig(config ConfigMap) {
-	loger.Info("Configuration")
-	for key, value := range config {
-		loger.Info(key, value)
-	}
 }
