@@ -66,7 +66,7 @@ func Info(msg string, info ...string) {
 
 // Debug prints a debug message if the DEBUG environment variable is set to "1"
 func Debug(msg string, info ...string) {
-	if os.Getenv("DEBUG") != "1" {
+	if os.Getenv("DEBUG") != "true" && os.Getenv("DEBUG") != "1" {
 		return
 	}
 
